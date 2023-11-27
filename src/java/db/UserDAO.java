@@ -5,11 +5,13 @@
 package db;
 
 import Utils.ConnectionPool;
+import Utils.DBUtil;
 import business.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Set;
@@ -99,35 +101,67 @@ public class UserDAO {
         return roles;
     }
     
-    public boolean doesEmailExist(String email){
+     public static boolean doesEmailExist(String email) {
         ConnectionPool pool = ConnectionPool.getInstance();
-        Connection conn = (Connection) pool.getConnection();
+        Connection conn = pool.getConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
-        
-        String query = "SELECT COUNT(*) FROM users WHERE email = ?";
-        
+
+        String query = "SELECT Email FROM users "
+                + "WHERE email = ?";
         try {
-            ps = (PreparedStatement) conn.prepareStatement(query);
-            ps.setString(2, email);
+            ps = conn.prepareStatement(query);
+            ps.setString(1, email);
             rs = ps.executeQuery();
-            
-            return rs.next() && rs.getInt(2) > 0;
+            return rs.next();
         } catch (SQLException e) {
-            message += "error; sql exception, does email exist";
+            System.out.println(e);
             return false;
         } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (ps != null) {
-                    ps.close();
-                }
-                pool.freeConnection(conn);
-            } catch (SQLException e) {
-                message += e;
-            }
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(conn);
         }
     }
+     
+     public static LinkedHashMap<String, User> selectAll() throws SQLException{
+         ConnectionPool pool = ConnectionPool.getInstance();
+        Connection conn = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        String query = "SELECT * FROM users";
+        
+        try{ 
+            ps = conn.prepareStatement(query);
+            rs = ps.executeQuery();
+            
+            User user = null;
+            LinkedHashMap<String, User> users = new LinkedHashMap();
+            
+            while(rs.next()){
+                user = new User();
+                
+                user.setId(rs.getInt("id"));
+                user.setEmail(rs.getString("email"));
+                user.setPassword(rs.getString("password"));
+                user.setName(rs.getString("name"));
+                user.setDob(rs.getDate("dob").toLocalDate());
+                user.setState(rs.getString("state"));
+                
+                users.put(user.getEmail(), user);
+            }
+            return users;
+        } catch (SQLException e){
+            throw e;
+        } finally {
+            try{
+                rs.close();
+                ps.close();
+                pool.freeConnection(conn);
+            } catch (Exception e){
+                throw e;
+            }
+        }
+     }
 }

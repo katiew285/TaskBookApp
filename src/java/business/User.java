@@ -11,37 +11,37 @@ import java.util.Set;
  */
 public class User implements Serializable {
 
-    private int userId;
+    private int id;
     private String email;
     private String password;
     private String name;
     private LocalDate dob;
     private String state;
-    private Set<String> roles;
+    private Set<String> role;
 
     public User() {
     }
 
-    public User(int userId, String email, String password, String name, LocalDate dob, String state, Set<String> roles) {
-        this.userId = userId;
+    public User(int id, String email, String password, String name, LocalDate dob, String state, Set<String> roles) {
+        this.id = id;
         this.email = email;
         this.password = password;
         this.name = name;
         this.dob = dob;
         this.state = state;
-        this.roles = roles;
+        this.role = role;
     }
 
     public User(int i, String adminadmincom, String pssword1, String admin, String string, String ne) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-    public int getUserId() {
-        return userId;
+    public int getId() {
+        return id;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getEmail() {
@@ -84,12 +84,15 @@ public class User implements Serializable {
         this.state = state;
     }
 
-    public Set<String> getRoles() {
-        return roles;
+    public Set<String> getRole() {
+        return role;
     }
 
-    public void setRoles(Set<String> roles) {
-        this.roles = roles;
+    public void setRoles(Set<String> role) {
+        this.role = role;
     }
 
+    public boolean isAdmin(){
+        return email.toLowerCase().contains("admin");
+    }
 }

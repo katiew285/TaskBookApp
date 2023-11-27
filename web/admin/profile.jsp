@@ -1,3 +1,9 @@
+<%-- 
+    Document   : profile
+    Created on : Nov 8, 2023, 8:15:16 PM
+    Author     : owner
+--%>
+
 <%@page import="business.User"%>
 <%@page import="java.util.Set"%>
 <%@page import="java.time.LocalDate"%>
@@ -5,8 +11,9 @@
 <%@ page import="javax.servlet.http.HttpSession" %>
 <%@ page import="javax.servlet.http.HttpServletRequest" %>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
 
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -19,19 +26,17 @@
             <h1> <%= getUserDisplayName(request)%> Profile Page </h1>
 
             <% User user = (User) session.getAttribute("user");
-                if (user != null) {%>
-            <p>Email: <%= user.getEmail()%></p>
-            <p>Name: <%= user.getName()%></p>
-            <p>Date of Birth: <%= user.getDob()%></p>
-            <p>State: <%= user.getState()%></p>
-            <% } else { %>
-            <p>User not found</p>
-            <% } %>
-            
-            <input type="button" value="tasks" onclick="window.location = 'tasks.jsp'">
-            <form action="<%= request.getContextPath() %>/Logout" method="get">
-                <input type="submit" value="logout">
-            </form>
+                if(user != null) { %>
+                <p>Email: <%= user.getEmail()%></p>
+                <p>Name: <%= user.getName()%></p>
+                <p>Date of Birth: <%= user.getDob()%></p>
+                <p>State: <%= user.getState()%></p>
+                <% } else { %>
+                <p>User not found</p>
+                <% } %>
+                
+            <a href="tasks.jsp">Tasks</a>
+            <a href="logout.jsp">Logout</a>
 
         </body>
     </center>
@@ -39,7 +44,7 @@
 
 <%!
     String formatDate(LocalDate date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM/dd/yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy");
         return date.format(formatter);
     }
 

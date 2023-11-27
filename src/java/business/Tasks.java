@@ -12,7 +12,8 @@ import java.util.Date;
  */
 public class Tasks {
 
-    private int taskId;
+    private int id;
+    private String email;
     private String title;
     private String description;
     private Date timestamp;
@@ -28,8 +29,9 @@ public class Tasks {
 
     }
 
-    public Tasks(int taskId, String title, String description, Date timestamp, Date dueDate, boolean isCompleted) {
-        this.taskId = taskId;
+    public Tasks(int id, String email, String title, String description, Date timestamp, Date dueDate, boolean isCompleted) {
+        this.id = id;
+        this.email = email;
         this.title = title;
         this.description = description;
         this.timestamp = timestamp;
@@ -37,14 +39,22 @@ public class Tasks {
         this.isCompleted = isCompleted;
     }
 
-    public int getTaskId() {
-        return taskId;
+    public int getId() {
+        return id;
     }
 
-    public void setTaskId(int taskId) {
-        this.taskId = taskId;
+    public void setId(int id) {
+        this.id = id;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    
     public String getTitle() {
         return title;
     }

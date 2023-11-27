@@ -1,31 +1,23 @@
 package controllers;
 
-import Utils.ConnectionPool;
 import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import business.User;
-import com.mysql.jdbc.Connection;
 import db.LoginDAO;
-import db.UserDAO;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpSession;
 
 @WebServlet(name = "Login", urlPatterns = {"/Login"})
-
 public class Login extends HttpServlet {
 
     private static final Logger LOG = Logger.getLogger(Login.class.getName());
     ArrayList<String> errors = new ArrayList<>();
-    Connection conn;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -37,60 +29,127 @@ public class Login extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String url = "/home.jsp";
-
-        Logger LOG = Logger.getLogger(Controller.class.getName());
-
-        if (conn != null) {
-            ConnectionPool.getInstance().freeConnection(conn);
-        }
-
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        try {
-
+        if (email != null && password != null && !email.isEmpty() && !password.isEmpty()) {
             LoginDAO loginDAO = new LoginDAO();
-            UserDAO userDAO = new UserDAO();
+            User user = loginDAO.select(email, password);
 
-            if (!loginDAO.select(email, password)) {
-                if(!userDAO.doesEmailExist(email)){
-                    errors.add("email not registered: " + email);
+            if (user != null) {
+                // Set user information in session
+                HttpSession session = request.getSession();
+                session.setAttribute("user", user);
+
+                // Redirect based on user role
+                if (user.isAdmin()) {
+                    response.sendRedirect("admin/profile.jsp");
                 } else {
-                        errors.add("Incorrect password for email: " + email);
-                        }
-                url = "/home.jsp"; 
-                errors.add("invalid email or password for email: " + email);
-                url = "/home.jsp";
-            } else {
-                LinkedHashMap<String, User> users = userDAO.getUserByEmail(email);
-
-                if (users != null) {
-                    HttpSession sess = request.getSession();
-                    sess.setAttribute("user", users);
-
-                    if (users.containsKey("admin")) {
-                        url = "/admin/profile.jsp";
-                    } else {
-                        url = "/user/profile.jsp";
-                    }
-                } else {
-                    errors.add("user info not found.");
-                    url = "/home.jsp";
+                    response.sendRedirect("user/profile.jsp");
                 }
+            } else {
+                // Handle invalid login
+                errors.add("incorrect email or password");
+                RequestDispatcher dispatcher = request.getRequestDispatcher("home.jsp");
+                dispatcher.forward(request, response);
             }
-    
-        } catch (SQLException e) {
-            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, e);
-            errors.add("error during login.");
-            url = "/home.jsp";
+        } else {
+            // Handle missing email or password
+            errors.add("please enter email and password");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("home.jsp");
+            dispatcher.forward(request, response);
         }
-
+        
         request.setAttribute("errors", errors);
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/home.jsp");
-        dispatcher.forward(request, response);
-        getServletContext().getRequestDispatcher(url).forward(request, response);
+
+//        String url = "/home.jsp";
+//
+//        Logger LOG = Logger.getLogger(Controller.class.getName());
+//
+//        String email = request.getParameter("email");
+//        String password = request.getParameter("password");
+//
+//        try {
+//            ConnectionPool pool = ConnectionPool.getInstance();
+//            Connection conn = (Connection) pool.getConnection();
+//
+//            if (conn != null) {
+//                ConnectionPool.getInstance().freeConnection(conn);
+//            }
+//
+//            if (email.isEmpty() || password.isEmpty()) {
+//                errors.add("please login.");
+//                url = "/home.jsp";
+//            } else {
+//               
+//                User user = LoginDAO.select(email, password);
+//                
+//                if (user != null) {
+//                    System.out.println("user found.");
+//
+//                    if (user.isAdmin()) {
+//                        url = "/admin/profile.jsp";
+//                    } else {
+//                        url = "/user/profile.jsp";
+//                    }
+//                } else {
+//                    errors.add("user not found.");
+//                    errors.add("incorrect email or password.");
+//                    url = "/home.jsp";
+//                }
+//            }
+////
+////            LoginDAO loginDAO = new LoginDAO();
+////            UserDAO userDAO = new UserDAO();
+////
+////            if (email.isEmpty() || password.isEmpty()) {
+////                errors.add("please login.");
+////            } else {
+////
+////                if (!userDAO.doesEmailExist(email)) {
+////                    errors.add("email not registered: " + email);
+////                    url = "/home.jsp";
+////                } else {
+////                    
+////                    User user = loginDAO.select(email, password);
+////                   
+////                    if (user == null) {
+////                        errors.add("incorrect email or password.");
+////                        url = "/home.jsp";
+////                    } else {
+////                        LinkedHashMap<String, User> users = userDAO.getUserByEmail(email);
+////
+////                        if (users != null) {
+////                            HttpSession sess = request.getSession();
+////                            sess.setAttribute("user", user);
+////
+////                            if (user.isAdmin()) {
+////                                url = "/admin/profile.jsp";
+////                            } else {
+////                                url = "/user/profile.jsp";
+////                            }
+////                        } else {
+////                            errors.add("user information not found.");
+////                            url = "/home.jsp";
+////                        }
+////                    }
+////                }
+////            }
+//
+//            pool.freeConnection(conn);
+//        } catch (Exception e) {
+//            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, e);
+//            errors.add("error during login." + e.getMessage());
+//            url = "/home.jsp";
+//        }
+//
+//        request.setAttribute("errors", errors);
+//
+//        RequestDispatcher dispatcher = request.getRequestDispatcher("/home.jsp");
+//        dispatcher.forward(request, response);
+//
+//        getServletContext().getRequestDispatcher(url).forward(request, response);
     }
 
     @Override

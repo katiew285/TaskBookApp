@@ -6,10 +6,13 @@ package db;
 
 
 import Utils.ConnectionPool;
+import Utils.DBUtil;
+import business.User;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.sql.Connection;
 
@@ -19,43 +22,70 @@ import java.sql.Connection;
  * @author katie
  */
 public class LoginDAO {
+  
     
-    private static final Logger LOG = Logger.getLogger(LoginDAO.class.getName());
+private static final Logger LOG = Logger.getLogger(LoginDAO.class.getName());
 
-    public boolean select(String email, String password) throws SQLException {
-        ConnectionPool pool = ConnectionPool.getInstance();
-        Connection conn = pool.getConnection();
+     public User select(String email, String password){
+        Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
+        User user = null;
         
-        String query = "SELECT * FROM user " +
-                " WHERE email = ? AND password = ?";
-        try {
+        try{
+            conn = ConnectionPool.getInstance().getConnection();
+            String query = "SELECT * FROM users WHERE email = ? AND password = ?";
             ps = conn.prepareStatement(query);
-            ps.setString(2, email);
-            ps.setString(3, password);
+            ps.setString(1, email);
+            ps.setString(2, password);
             rs = ps.executeQuery();
             
-            return rs.next();
-        } catch (SQLException e) {
-            LOG.log(Level.SEVERE, "***select");
-        } finally {
-            try {
-                if(rs != null){
-                    rs.close();
-                }
-                if(ps != null){
-                    ps.close();
-                }
-                pool.freeConnection(conn);
-            } catch (SQLException e){
-                LOG.log(Level.SEVERE, "***select null pointer");
+            if(rs.next()){
+                user = new User();
+                user.setId(rs.getInt("id"));
+                user.setEmail(rs.getString("email"));
+                user.setPassword(rs.getString("password"));
+                user.setName(rs.getString("name"));
+                user.setDob(rs.getDate("dob").toLocalDate());
+                user.setState(rs.getString("state"));
             }
+        } catch (SQLException e){
+            LOG.log(Level.SEVERE, "***error with select", e);
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            ConnectionPool.getInstance().freeConnection(conn);
         }
-        
-        if(conn != null){
-            pool.freeConnection(conn);
-        }
-        return false;
+    return user;
     }
+   
+//    public static User select(String email, String password) {
+//        ConnectionPool pool = ConnectionPool.getInstance();
+//        Connection connection = pool.getConnection();
+//        PreparedStatement ps = null;
+//        ResultSet rs = null;
+//
+//        String query = "SELECT * FROM users "
+//                + "WHERE email = ? AND password = ?";
+//        try {
+//            ps = connection.prepareStatement(query);
+//            ps.setString(1, email);
+//            ps.setString(2, password);
+//            rs = ps.executeQuery();
+//            User user = null;
+//            
+//            if (rs.next()) {
+//                user = new User();
+//                user.setEmail(rs.getString("email"));
+//                user.setPassword(rs.getString("password"));
+//            }
+//        } catch (SQLException e) {
+//            System.out.println(e);
+//        } finally {
+//            DBUtil.closeResultSet(rs);
+//            DBUtil.closePreparedStatement(ps);
+//            pool.freeConnection(connection);
+//        }
+//        return null;
+//    }
 }

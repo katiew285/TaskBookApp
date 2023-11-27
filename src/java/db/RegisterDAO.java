@@ -42,7 +42,7 @@ public class RegisterDAO {
             try {
                 ps.close();
                 pool.freeConnection(conn);
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 throw e;
             }
         }
