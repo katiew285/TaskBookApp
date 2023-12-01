@@ -19,7 +19,7 @@ public class ConnectionPool {
             //This links up with the resource tag in context.xml
             dataSource = (DataSource) ic.lookup("java:/comp/env/jdbc/taskbook");
         } catch (NamingException e) {
-           LOG.log(Level.SEVERE, "*** failed on datasource lookup", e);
+            LOG.log(Level.SEVERE, "*** failed on datasource lookup", e);
         }
     }
 
@@ -34,16 +34,18 @@ public class ConnectionPool {
         try {
             return dataSource.getConnection();
         } catch (SQLException e) {
-           LOG.log(Level.SEVERE, "*** failed on getting connection", e);
+            LOG.log(Level.SEVERE, "*** failed on getting connection", e);
             return null;
         }
     }
 
     public void freeConnection(Connection c) {
         try {
-            c.close();
+            if (c != null) {
+                c.close();
+            }
         } catch (SQLException e) {
-           LOG.log(Level.SEVERE, "*** failed on freeing connection", e);
+            LOG.log(Level.SEVERE, "*** failed on freeing connection", e);
         }
     }
 }

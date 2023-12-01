@@ -4,6 +4,7 @@
 <%@page import="java.time.format.DateTimeFormatter"%>
 <%@ page import="javax.servlet.http.HttpSession" %>
 <%@ page import="javax.servlet.http.HttpServletRequest" %>
+<link rel="stylesheet" href="../styles/style.css">
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
@@ -17,7 +18,7 @@
         <body>
 
             <h1> <%= getUserDisplayName(request)%> Profile Page </h1>
-
+            <div class="profile-container">
             <% User user = (User) session.getAttribute("user");
                 if (user != null) {%>
             <p>Email: <%= user.getEmail()%></p>
@@ -27,9 +28,10 @@
             <% } else { %>
             <p>User not found</p>
             <% } %>
-            
-            <input type="button" value="tasks" onclick="window.location = 'tasks.jsp'">
+            </div>
+           
             <form action="<%= request.getContextPath() %>/Logout" method="get">
+           <input type="button" value="tasks" onclick="window.location = 'tasks.jsp'">
                 <input type="submit" value="logout">
             </form>
 

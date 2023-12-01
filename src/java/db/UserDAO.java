@@ -21,9 +21,9 @@ import java.util.Set;
  * @author katie
  */
 public class UserDAO {
-        
+
     String message = "";
-    
+
     public LinkedHashMap<String, User> getUserByEmail(String email) {
         ConnectionPool pool = ConnectionPool.getInstance();
         Connection conn = (Connection) pool.getConnection();
@@ -36,16 +36,16 @@ public class UserDAO {
             ps = (PreparedStatement) conn.prepareStatement(query);
             ps.setString(1, email);
             rs = ps.executeQuery();
-           
+
             LinkedHashMap<String, User> users = new LinkedHashMap();
-            
+
             while (rs.next()) {
-               User u = new User();
-                
+                User u = new User();
+
                 u.setEmail(rs.getString("email"));
                 u.setPassword(rs.getString("password"));
                 u.setRoles(getRolesForUser(email));
-                
+
                 users.put(u.getEmail(), u);
             }
             return users;
@@ -61,7 +61,7 @@ public class UserDAO {
                 }
                 pool.freeConnection(conn);
             } catch (Exception e) {
-                 throw new RuntimeException("Error closing resources", e);
+                throw new RuntimeException("Error closing resources", e);
             }
         }
     }
@@ -100,8 +100,8 @@ public class UserDAO {
         }
         return roles;
     }
-    
-     public static boolean doesEmailExist(String email) {
+
+    public static boolean doesEmailExist(String email) {
         ConnectionPool pool = ConnectionPool.getInstance();
         Connection conn = pool.getConnection();
         PreparedStatement ps = null;
@@ -123,45 +123,47 @@ public class UserDAO {
             pool.freeConnection(conn);
         }
     }
-     
-     public static LinkedHashMap<String, User> selectAll() throws SQLException{
-         ConnectionPool pool = ConnectionPool.getInstance();
+
+    public static LinkedHashMap<String, User> selectAll() throws SQLException {
+        ConnectionPool pool = ConnectionPool.getInstance();
         Connection conn = pool.getConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
 
         String query = "SELECT * FROM users";
-        
-        try{ 
+
+        try {
             ps = conn.prepareStatement(query);
             rs = ps.executeQuery();
-            
+
             User user = null;
             LinkedHashMap<String, User> users = new LinkedHashMap();
-            
-            while(rs.next()){
+
+            while (rs.next()) {
                 user = new User();
-                
+
                 user.setId(rs.getInt("id"));
                 user.setEmail(rs.getString("email"));
                 user.setPassword(rs.getString("password"));
                 user.setName(rs.getString("name"));
                 user.setDob(rs.getDate("dob").toLocalDate());
                 user.setState(rs.getString("state"));
-                
+
                 users.put(user.getEmail(), user);
             }
             return users;
-        } catch (SQLException e){
+        } catch (SQLException e) {
             throw e;
         } finally {
-            try{
-                rs.close();
-                ps.close();
+            try {
+                if (rs != null || ps != null) {
+                    rs.close();
+                    ps.close();
+                }
                 pool.freeConnection(conn);
-            } catch (Exception e){
+            } catch (Exception e) {
                 throw e;
             }
         }
-     }
+    }
 }

@@ -22,21 +22,21 @@ public class RegisterDAO {
         ConnectionPool pool = ConnectionPool.getInstance();
         Connection conn = pool.getConnection();
         PreparedStatement ps = null;
-       
-            String query = "INSERT INTO users "
-                    + "(email, password, name, dob, state)"
-                    + "VALUES (?, ?, ?, ?, ?)";
-            try {
-            
-                ps = conn.prepareStatement(query);
-           
-                ps.setString(1, user.getEmail());
-                ps.setString(2, user.getPassword());
-                ps.setString(3, user.getName());
-                ps.setDate(4, Date.valueOf(user.getDob()));
-                ps.setString(5, user.getState());
-                 ps.executeUpdate();
-               } catch (SQLException sqlEx) {
+
+        String query = "INSERT INTO users "
+                + "(email, password, name, dob, state)"
+                + "VALUES (?, ?, ?, ?, ?)";
+        try {
+
+            ps = conn.prepareStatement(query);
+
+            ps.setString(1, user.getEmail());
+            ps.setString(2, user.getPassword());
+            ps.setString(3, user.getName());
+            ps.setDate(4, Date.valueOf(user.getDob()));
+            ps.setString(5, user.getState());
+            ps.executeUpdate();
+        } catch (SQLException sqlEx) {
             throw sqlEx;
         } finally {
             try {

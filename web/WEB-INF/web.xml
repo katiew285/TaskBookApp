@@ -17,8 +17,12 @@
         <servlet-class>controllers.Logout</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>Tasks</servlet-name>
-        <servlet-class>controllers.Tasks</servlet-class>
+        <servlet-name>Task</servlet-name>
+        <servlet-class>controllers.Task</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AllUsers</servlet-name>
+        <servlet-class>controllers.AllUsers</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Controller</servlet-name>
@@ -37,8 +41,12 @@
         <url-pattern>/Logout</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>Tasks</servlet-name>
-        <url-pattern>/Tasks</url-pattern>
+        <servlet-name>Task</servlet-name>
+        <url-pattern>/Task</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AllUsers</servlet-name>
+        <url-pattern>/AllUsers</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
@@ -48,5 +56,4 @@
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>
     </welcome-file-list>
-    
 </web-app>

@@ -1,5 +1,6 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.ArrayList" %>
+<link rel="stylesheet" href="styles/style.css">
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -14,11 +15,11 @@
             
             if(errors != null && !errors.isEmpty()){
             for(String error : errors){
-            out.println("<div style='color: red;'>" + error + "</div>");
+            out.println("<div style='color: red;' class='error-message'>" + error + "</div>");
                 }
                errors.clear();
             } %>
-        <strong><h1>Register</h1></strong><br>
+            <header> <strong><h1>Register</h1></strong><br></header>
         <form action="Register" method="post">
             email: <input type="email" name="email"><br>
             password: <input type="password" name="password"><Br>

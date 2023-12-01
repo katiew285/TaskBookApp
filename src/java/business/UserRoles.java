@@ -1,11 +1,13 @@
 
 package business;
 
+import java.io.Serializable;
+
 /**
  *
  * @author katie
  */
-public class UserRoles {
+public class UserRoles implements Serializable {
     
     private int id;
     private String email;

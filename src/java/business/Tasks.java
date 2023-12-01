@@ -4,23 +4,26 @@
  */
 package business;
 
+import java.io.Serializable;
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
  *
  * @author katie
  */
-public class Tasks {
+public class Tasks implements Serializable {
 
     private int id;
     private String email;
     private String title;
     private String description;
-    private Date timestamp;
-    private Date dueDate;
+    private Timestamp timestamp;
+    private LocalDate dueDate;
     private boolean isCompleted;
 
-    public Tasks(String title, Date timestamp) {
+    public Tasks(String title, Timestamp timestamp) {
         this.title = title;
         this.timestamp = timestamp;
     }
@@ -28,10 +31,14 @@ public class Tasks {
     public Tasks() {
 
     }
+    
+    public Tasks(int id, String email, String title, String description, Timestamp timestamp, boolean isCompleted) {
+        this(id, email, title, description, timestamp, null, isCompleted);
+    }
 
-    public Tasks(int id, String email, String title, String description, Date timestamp, Date dueDate, boolean isCompleted) {
+    public Tasks(int id, String email, String title, String description, Timestamp timestamp, LocalDate dueDate, boolean isCompleted) {
         this.id = id;
-        this.email = email;
+        this.email = (email != null) ? email : "";
         this.title = title;
         this.description = description;
         this.timestamp = timestamp;
@@ -71,27 +78,32 @@ public class Tasks {
         this.description = description;
     }
 
-    public Date getTimestamp() {
+    public Timestamp getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
     }
 
-    public Date getDueDate() {
+    public LocalDate getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(Date dueDate) {
+    public void setDueDate(LocalDate dueDate) {
         this.dueDate = dueDate;
     }
 
-    public boolean isIsCompleted() {
+    public boolean getIsCompleted() {
         return isCompleted;
     }
 
     public void setIsCompleted(boolean isCompleted) {
         this.isCompleted = isCompleted;
     }
+
+    public void getDueDate(LocalDate toLocalDate) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+    
 }

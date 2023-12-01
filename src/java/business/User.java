@@ -29,7 +29,7 @@ public class User implements Serializable {
         this.name = name;
         this.dob = dob;
         this.state = state;
-        this.role = role;
+        this.role = roles;
     }
 
     public User(int i, String adminadmincom, String pssword1, String admin, String string, String ne) {

@@ -10,6 +10,7 @@
 <%@page import="java.time.format.DateTimeFormatter"%>
 <%@ page import="javax.servlet.http.HttpSession" %>
 <%@ page import="javax.servlet.http.HttpServletRequest" %>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/styles/style.css">
 
 
 
@@ -35,8 +36,10 @@
                 <p>User not found</p>
                 <% } %>
                 
-            <a href="tasks.jsp">Tasks</a>
-            <a href="logout.jsp">Logout</a>
+            <form action="<%= request.getContextPath()%>/Logout" method="get">
+            <input type="button" value="all users" onclick="window.location = 'allUsers.jsp'">
+                <input type="submit" value="logout">
+            </form>
 
         </body>
     </center>

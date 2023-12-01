@@ -1,0 +1,86 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5dc; /* Tan Background */
+    color: #333;
+}
+
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.center {
+    text-align: center;
+}
+
+header {
+    background-color: #d2b48c; /* Tan Header */
+    color: #fff;
+    padding: 20px;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+form {
+    background-color: #fff; /* White Form Background */
+    padding: 30px;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.error-message {
+    color: #dc3545;
+    margin-bottom: 15px;
+}
+
+.profile-container {
+    background-color: #fff; /* White Profile Background */
+    padding: 30px;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.button {
+    background-color: #d2b48c; /* Tan Button */
+    color: #fff;
+    padding: 12px 24px;
+    text-decoration: none;
+    border-radius: 5px;
+    display: inline-block;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.button:hover {
+    background-color: #bfa673; /* Darker Tan Button on Hover */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.5);
+}
+
+.profile-container p {
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.profile-container input[type="button"],
+.profile-container input[type="submit"],
+.profile-container input[type="reset"] {
+    background-color: #d2b48c; /* Tan Button */
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.profile-container input[type="button"]:hover,
+.profile-container input[type="submit"]:hover,
+.profile-container input[type="reset"]:hover {
+    background-color: #bfa673; /* Darker Tan Button on Hover */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.5);
+}

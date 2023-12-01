@@ -29,7 +29,6 @@ public class Register extends HttpServlet {
 
     private static final Logger LOG = Logger.getLogger(Register.class.getName());
     ArrayList<String> errors = new ArrayList<>();
-    Connection conn;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -42,17 +41,10 @@ public class Register extends HttpServlet {
             throws ServletException, IOException {
         String url = "/register.jsp";
 
-        Logger LOG = Logger.getLogger(Controller.class.getName());
+        Logger LOG = Logger.getLogger(Register.class.getName());
         String action = request.getParameter("action");
         User user = new User();
-        
-        try {
-            user = new User(1, "admin@admin.com", "P@ssword1", "admin", "01/01/2000", "NE");
-            RegisterDAO.insert(user);
-        } catch (Exception e) {
-            errors.add("insert failed.");
-            LOG.log(Level.SEVERE, null, e);
-        }
+        ArrayList<String> errors = new ArrayList<>();
 
         try {
             String email = request.getParameter("email");
@@ -125,8 +117,8 @@ public class Register extends HttpServlet {
 
         request.setAttribute("errors", errors);
         request.setAttribute("user", user);
-        
-         RequestDispatcher dispatcher = request.getRequestDispatcher("/register.jsp");
+
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/register.jsp");
         dispatcher.forward(request, response);
         getServletContext().getRequestDispatcher(url).forward(request, response);
     }

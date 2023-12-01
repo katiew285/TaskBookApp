@@ -17,7 +17,6 @@ import javax.servlet.http.HttpSession;
 public class Login extends HttpServlet {
 
     private static final Logger LOG = Logger.getLogger(Login.class.getName());
-    ArrayList<String> errors = new ArrayList<>();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -31,6 +30,7 @@ public class Login extends HttpServlet {
 
         String email = request.getParameter("email");
         String password = request.getParameter("password");
+        ArrayList<String> errors = new ArrayList<>();
 
         if (email != null && password != null && !email.isEmpty() && !password.isEmpty()) {
             LoginDAO loginDAO = new LoginDAO();
@@ -44,23 +44,23 @@ public class Login extends HttpServlet {
                 // Redirect based on user role
                 if (user.isAdmin()) {
                     response.sendRedirect("admin/profile.jsp");
+                    return;
                 } else {
                     response.sendRedirect("user/profile.jsp");
+                    return;
                 }
             } else {
                 // Handle invalid login
                 errors.add("incorrect email or password");
-                RequestDispatcher dispatcher = request.getRequestDispatcher("home.jsp");
-                dispatcher.forward(request, response);
             }
         } else {
             // Handle missing email or password
             errors.add("please enter email and password");
-            RequestDispatcher dispatcher = request.getRequestDispatcher("home.jsp");
-            dispatcher.forward(request, response);
         }
         
         request.setAttribute("errors", errors);
+         RequestDispatcher dispatcher = request.getRequestDispatcher("home.jsp");
+                dispatcher.forward(request, response);
 
 
 //        String url = "/home.jsp";
