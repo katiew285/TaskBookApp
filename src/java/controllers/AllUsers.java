@@ -8,8 +8,10 @@ import business.User;
 import db.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
@@ -31,26 +33,43 @@ public class AllUsers extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        ArrayList<String> errors = new ArrayList<>();
-        LinkedHashMap<String, User> users = null;
+
+        List<User> users = null;
 
         try {
             users = UserDAO.selectAll();
-        } catch (Exception e) {
-            e.printStackTrace();
-            errors.add("error.");
-            LOG.log(Level.SEVERE, null, e);
+        } catch (ClassNotFoundException e) {
+            LOG.log(Level.SEVERE, "error fetching users", e);
+            request.setAttribute("NOTIFICATION", "no users");
+        } catch (SQLException ex) {
+            Logger.getLogger(AllUsers.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         if (users != null) {
             request.setAttribute("users", users);
         } else {
-            errors.add("failed to retrieve data.");
+            LOG.log(Level.SEVERE, "error fetching users");
+            request.setAttribute("NOTIFICATION", "no users");
         }
-
-        request.setAttribute("errors", errors);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("allUsers.jsp");
-        dispatcher.forward(request, response);
+        String userToDelete = request.getParameter("deleteUserId");
+        if (userToDelete != null && !userToDelete.isEmpty()) {
+            // Perform delete user action
+            try {
+                int userId = Integer.parseInt(userToDelete);
+                boolean isDeleted = UserDAO.deleteUserById(userId);
+                if (isDeleted) {
+                    request.setAttribute("NOTIFICATION", "user deleted successfully.");
+                } else {
+                    request.setAttribute("NOTIFICATION", "failed to delete user.");
+                }
+            } catch (NumberFormatException | SQLException | ClassNotFoundException e) {
+                LOG.log(Level.SEVERE, "error deleting user", e);
+                request.setAttribute("NOTIFICATION", "error deleting user.");
+            }
+        } else {
+            RequestDispatcher dispatcher = request.getRequestDispatcher("admin/allUsers.jsp");
+            dispatcher.forward(request, response);
+        }
     }
 
     @Override

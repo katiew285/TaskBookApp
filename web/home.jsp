@@ -8,30 +8,25 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link rel="stylesheet" href="styles/style.css"/>
-
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Login or Register</title>
+        <title>TaskBook Welcome Page</title>
     </head>
-    <center>
-    <header><h1><strong>Login</strong></h1></header>
-        <body>
-            <% ArrayList<String> errors = (ArrayList<String>) request.getAttribute("errors");
-
-                if (errors != null && !errors.isEmpty()) {
-                    for (String error : errors) {
-                        out.println("<div style='color: red;' class='error-message'>" + error + "</div>");
-                    }
-            }%>
-
-            <form action="Login" method="post" >
-                <input type="hidden" name="login" id="login">
-                email: <input type="email" name="email"><br>
-                password: <input type="password" name="password"><Br>
-                <input type="submit" value="login"><input type="reset" value="reset"><br>
-                Don't have an account?<br>
-                <input type="button" value="register" onclick="window.location = 'register.jsp'">
-            </form>
-        </body>
-    </center>
+    <link rel="stylesheet" href="<%= request.getContextPath()%>/styles/style.css">
+    <header>
+        <h1 class="header-text"><strong>Welcome to TaskBook!</strong></h1>
+        <nav>
+            <ul class="navbar-nav navbar-collapse justify-content-end">
+                <li><a href="<%= request.getContextPath()%>/login.jsp" class="nav-link">login</a></li><br>
+                <li><a href="<%= request.getContextPath()%>/register.jsp" class="nav-link">register</a></li>
+            </ul>
+        </nav>
+    </header>
+    <body>
+        <div class="container">
+            <i><p>please register or log in to access content.</p></i>
+        </div>
+    </body>
+    <footer>
+        <div class="footer">© 2023 - TaskBook</div>
+    </footer>
 </html>

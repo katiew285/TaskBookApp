@@ -20,14 +20,57 @@ header {
     color: #fff;
     padding: 20px;
     box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.5);
+    border: 1px solid #000; /* Thin black solid border */
+}
+
+.header-text {
+    color: #fff; /* Set the text color to white */
+    text-shadow: -1px -1px 1px #000, 1px -1px 1px #000, -1px 1px 1px #000, 1px 1px 1px #000; /* Create a black border effect */
 }
 
 form {
     background-color: #fff; /* White Form Background */
-    padding: 30px;
-    margin-top: 20px;
+    padding: 20px; /* Adjusted padding */
+    margin: 20px 0; /* Added margin to localize the form */
     border-radius: 8px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    border: 1px solid #000; /* Thin black solid border */
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    border: 1px solid #000; /* Thin black solid border */
+}
+
+label {
+    font-weight: bold;
+}
+
+form label {
+    font-weight: bold;
+}
+
+ul {
+    list-style: none;
+}
+
+a {
+    display: inline-block;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: #fff;
+    background-color: #f5f5dc; /* Tan Button */
+    border: 1px solid #000;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    text-shadow: -1px -1px 1px #000, 1px -1px 1px #000, -1px 1px 1px #000, 1px 1px 1px #000; /* Black border effect on text */
+
+}
+
+a:hover {
+    background-color: #bfa673; /* Darker Tan Button on Hover */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.5);
 }
 
 .error-message {
@@ -37,10 +80,11 @@ form {
 
 .profile-container {
     background-color: #fff; /* White Profile Background */
-    padding: 30px;
-    margin-top: 20px;
+    padding: 20px; /* Adjusted padding */
+    margin: 20px 0; /* Added margin to localize the container */
     border-radius: 8px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    border: 1px solid #000; /* Thin black solid border */
 }
 
 .button {
@@ -53,6 +97,7 @@ form {
     cursor: pointer;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    border: 1px solid #000; /* Thin black solid border */
 }
 
 .button:hover {
@@ -76,6 +121,7 @@ form {
     cursor: pointer;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    border: 1px solid #000; /* Thin black solid border */
 }
 
 .profile-container input[type="button"]:hover,
@@ -83,4 +129,12 @@ form {
 .profile-container input[type="reset"]:hover {
     background-color: #bfa673; /* Darker Tan Button on Hover */
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.5);
+}
+
+footer {
+    background-color: #d2b48c; /* Tan Footer */
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #000; /* Thin black solid border */
 }

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.sql.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
@@ -50,7 +51,7 @@ public class Register extends HttpServlet {
             String email = request.getParameter("email");
             String password = request.getParameter("password");
             String name = request.getParameter("name");
-            String dobString = request.getParameter("dob");
+            Date dob = Date.valueOf(request.getParameter("dob"));
             String state = request.getParameter("state");
 
             boolean isValid = true;
@@ -70,14 +71,13 @@ public class Register extends HttpServlet {
                 errors.add("please enter name.");
             }
 
-            LocalDate dob;
             LocalDate today = LocalDate.now();
+            LocalDate dobLD = dob.toLocalDate();
             try {
-                dob = LocalDate.parse(dobString);
                 if (dob.equals("")) {
                     isValid = false;
                     errors.add("plese enter date of birth.");
-                } else if (dob.isAfter(today.minusYears(18))) {
+                } else if (dobLD.isAfter(today.minusYears(18))) {
                     isValid = false;
                     errors.add("you must be 18 years or older to register.");
                 }
@@ -96,7 +96,7 @@ public class Register extends HttpServlet {
                 user.setEmail(email);
                 user.setPassword(password);
                 user.setName(name);
-                user.setDob(LocalDate.parse(dobString));
+                user.setDob(dob);
                 user.setState(state);
 
                 try {

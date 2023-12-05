@@ -14,7 +14,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.sql.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
@@ -33,34 +35,41 @@ import javax.servlet.http.HttpSession;
 public class Task extends HttpServlet {
 
     private static final Logger LOG = Logger.getLogger(Register.class.getName());
-    Connection conn;
     ArrayList<String> errors = new ArrayList<>();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
         String action = request.getParameter("action");
         HttpSession session = request.getSession();
-        LinkedHashMap<String, Tasks> tasks = null;
-        Logger LOG = Logger.getLogger(Task.class.getName());
+        List<Tasks> tasks = null;
 
+        String userEmail = (String) session.getAttribute("userEmail");
         try {
-            tasks = TaskDAO.selectAll();
+            tasks = TaskDAO.selectAll(userEmail);
             if (tasks == null) {
                 errors.add("task list is null.");
             } else if (tasks.isEmpty()) {
                 errors.add("task list is empty.");
+            } else {
+                request.setAttribute("NOTIFICATION", "tasks loaded successfully.");
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             errors.add("error showing all tasks." + e.getMessage());
-            LOG.log(Level.SEVERE, null, e);
+            LOG.log(Level.SEVERE, "***error showing all tasks.", e);
         }
 
-        session.setAttribute("tasks", tasks);
+        session.setAttribute("userEmail", userEmail);
+        request.setAttribute("tasks", tasks);
         request.setAttribute("errors", errors);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("user/tasks.jsp");
-        dispatcher.forward(request, response);
+
+        if ("edit".equals(action)) {
+            RequestDispatcher dispatcher = request.getRequestDispatcher("user/taskForm.jsp");
+            dispatcher.forward(request, response);
+        } else {
+            RequestDispatcher dispatcher = request.getRequestDispatcher("user/tasks.jsp");
+            dispatcher.forward(request, response);
+        }
     }
 
     @Override
@@ -69,52 +78,48 @@ public class Task extends HttpServlet {
         String action = request.getParameter("action");
         HttpSession session = request.getSession();
         String email = (String) session.getAttribute("email");
-        String url = "";
 
         switch (action) {
             case "confirmIsCompleted" -> {
                 try {
                     int taskId = Integer.parseInt(request.getParameter("taskId"));
                     TaskDAO.markTaskCompleted(taskId);
+                    request.setAttribute("NOTIFICATION", "task completed!!!");
                 } catch (SQLException ex) {
                     errors.add("error completing task.");
-                    Logger.getLogger(Tasks.class.getName()).log(Level.SEVERE, null, ex);
+                    LOG.log(Level.SEVERE, "error with sql, confirm is completed", ex);
+                } catch (ClassNotFoundException ex) {
+                    LOG.log(Level.SEVERE, "class not found, confirm is completed", ex);
                 }
-                String jScript = "alert('task completed!')";
-                request.setAttribute("javascript", jScript);
-                break;
             }
             case "confirmDelete" -> {
                 try {
                     int taskIndex = Integer.parseInt(request.getParameter("taskIndex"));
                     TaskDAO.deleteTask(taskIndex);
+                    request.setAttribute("NOTIFICATION", "task deleted");
                 } catch (SQLException ex) {
                     errors.add("error deleting task.");
-                    LOG.log(Level.SEVERE, null, ex);
+                    LOG.log(Level.SEVERE, "error with sql, confirm delete", ex);
+                } catch (ClassNotFoundException ex) {
+                    LOG.log(Level.SEVERE, "class not found, confirm delete", ex);
                 }
-                String jScript = "alert('task deleted.')";
-                request.setAttribute("javascript", jScript);
-                break;
             }
             case "confirmDeleteAll" -> {
                 try {
                     TaskDAO.deleteAllTasks();
+                    request.setAttribute("NOTIFICATION", "all tasks deleted.");
                 } catch (Exception ex) {
                     errors.add("error deleting all tasks.");
-                    LOG.log(Level.SEVERE, null, ex);
+                    LOG.log(Level.SEVERE, "error deleting all tasks", ex);
                 }
-                String jScript = "alert('All tasks deleted.')";
-                request.setAttribute("javascript", jScript);
-                break;
             }
             case "addTask" -> {
                 try {
-
                     String title = request.getParameter("title");
                     String description = request.getParameter("description");
                     String timestampString = request.getParameter("timestamp");
-                    String dueDateString = request.getParameter("dueDate");
-                    
+                    Date dueDate = Date.valueOf(request.getParameter("dueDate"));
+
                     boolean isValid = true;
 
                     if ("".equals(title) || title.isEmpty()) {
@@ -136,27 +141,21 @@ public class Task extends HttpServlet {
                         LOG.log(Level.SEVERE, null, e);
                     }
 
-                    LocalDate dueDate = null;
-                    DateTimeFormatter output = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-
-                    if (dueDateString != null && !dueDateString.isEmpty()) {
+                    if (dueDate != null) {
                         try {
-                            dueDate = LocalDate.parse(dueDateString);
-
-                            if (dueDate.isBefore(LocalDate.now())) {
+                            LocalDate dueDateLD = dueDate.toLocalDate();
+                            if (dueDateLD.isBefore(LocalDate.now())) {
                                 isValid = false;
-                                errors.add("Due date should not be before today.");
+                                errors.add("due date should not be before today.");
                             }
                         } catch (DateTimeParseException e) {
                             isValid = false;
-                            errors.add("Invalid due date format.");
+                            errors.add("invalid due date format.");
                             LOG.log(Level.SEVERE, null, e);
                         }
                     } else {
                         isValid = false;
                     }
-
-                    String formattedDueDate = (dueDate != null) ? dueDate.format(output) : null;
 
                     if (isValid) {
                         Tasks task = new Tasks();
@@ -166,22 +165,26 @@ public class Task extends HttpServlet {
                         task.setDescription(description);
                         task.setTimestamp(timestamp);
                         task.setDueDate(dueDate);
+
                         try {
                             TaskDAO.addTask(task);
+                            request.setAttribute("NOTIFICATION", "task added!");
                             request.setAttribute("task", task);
-                            url = "/user/tasks.jsp";
                         } catch (SQLException e) {
                             errors.add("error with sql.");
-                            url = "/user/tasks.jsp";
                             LOG.log(Level.SEVERE, null, e);
-                            e.printStackTrace();
-                            System.out.println(e);
-                                    }
+                        } catch (ClassNotFoundException ex) {
+                            LOG.log(Level.SEVERE, null, ex);
+                        }
                     }
                 } catch (DateTimeParseException e) {
                     errors.add("error parsing.");
                     LOG.log(Level.SEVERE, null, e);
                 }
+                
+                    RequestDispatcher dispatcher = request.getRequestDispatcher("user/taskForm.jsp");
+                    dispatcher.forward(request, response);
+
                 break;
             }
             default -> {
@@ -189,15 +192,6 @@ public class Task extends HttpServlet {
             }
         }
 
-//        LinkedHashMap<String, Tasks> updatedTasks = null;
-//        try {
-//            updatedTasks = TaskDAO.selectAll();
-//        } catch (SQLException ex) {
-//            errors.add("error retrieving tasks.");
-//            Logger.getLogger(Tasks.class
-//                    .getName()).log(Level.SEVERE, null, ex);
-//        }
-        // request.setAttribute("updatedTasks", updatedTasks);
         request.setAttribute("errors", errors);
         RequestDispatcher dispatcher = request.getRequestDispatcher("user/tasks.jsp");
         dispatcher.forward(request, response);

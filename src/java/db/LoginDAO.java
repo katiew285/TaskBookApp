@@ -25,11 +25,16 @@ public class LoginDAO {
     
 private static final Logger LOG = Logger.getLogger(LoginDAO.class.getName());
 
-     public User select(String email, String password){
+     public static User select(String email, String password) throws SQLException, ClassNotFoundException {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         User user = null;
+        
+         if (!isDatabaseConnectionValid()) {
+            LOG.log(Level.WARNING, "returning default due to invalid database connection.");
+            return user;
+        }
         
         try{
             conn = ConnectionPool.getInstance().getConnection();
@@ -41,13 +46,9 @@ private static final Logger LOG = Logger.getLogger(LoginDAO.class.getName());
             
             if(rs.next()){
                 user = new User();
-                user.setId(rs.getInt("id"));
                 user.setEmail(rs.getString("email"));
                 user.setPassword(rs.getString("password"));
-                user.setName(rs.getString("name"));
-                user.setDob(rs.getDate("dob").toLocalDate());
-                user.setState(rs.getString("state"));
-            }
+              }
         } catch (SQLException e){
             LOG.log(Level.SEVERE, "***error with select", e);
         } finally {
@@ -56,6 +57,16 @@ private static final Logger LOG = Logger.getLogger(LoginDAO.class.getName());
             ConnectionPool.getInstance().freeConnection(conn);
         }
     return user;
+    }
+     
+     private static boolean isDatabaseConnectionValid() throws ClassNotFoundException {
+        try {
+            ConnectionPool.getInstance().testConnection();
+            return true;
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Database connection test failed.", e);
+            return false;
+        }
     }
    
 //    public static User select(String email, String password) {

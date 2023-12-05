@@ -8,7 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import business.User;
 import db.LoginDAO;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpSession;
@@ -21,47 +23,49 @@ public class Login extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        doPost(request, response);
+        RequestDispatcher dispatcher = request.getRequestDispatcher("login.jsp");
+        dispatcher.forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        
+        HttpSession session = request.getSession();
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         ArrayList<String> errors = new ArrayList<>();
-
-        if (email != null && password != null && !email.isEmpty() && !password.isEmpty()) {
-            LoginDAO loginDAO = new LoginDAO();
-            User user = loginDAO.select(email, password);
+        User user = null;
+        
+        if(email != null && !email.isEmpty() && password != null && !password.isEmpty()){
+         try {
+                user = LoginDAO.select(email, password);
 
             if (user != null) {
-                // Set user information in session
-                HttpSession session = request.getSession();
-                session.setAttribute("user", user);
-
-                // Redirect based on user role
+                session.setAttribute("userEmail", email);
+                //request.setAttribute("userEmail", user);
                 if (user.isAdmin()) {
                     response.sendRedirect("admin/profile.jsp");
-                    return;
                 } else {
                     response.sendRedirect("user/profile.jsp");
-                    return;
                 }
+                return;
             } else {
                 // Handle invalid login
                 errors.add("incorrect email or password");
             }
+        } catch (SQLException | ClassNotFoundException e){
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, "Error on login servlet.");
+            errors.add("error.");
+        }
         } else {
-            // Handle missing email or password
-            errors.add("please enter email and password");
+            errors.add("please enter email and password to log in.");
         }
         
-        request.setAttribute("errors", errors);
-         RequestDispatcher dispatcher = request.getRequestDispatcher("home.jsp");
-                dispatcher.forward(request, response);
 
+        request.setAttribute("errors", errors);
+        RequestDispatcher dispatcher = request.getRequestDispatcher("login.jsp");
+        dispatcher.forward(request, response);
 
 //        String url = "/home.jsp";
 //

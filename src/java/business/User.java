@@ -3,6 +3,7 @@ package business;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.sql.Date;
 import java.util.Set;
 
 /**
@@ -15,14 +16,14 @@ public class User implements Serializable {
     private String email;
     private String password;
     private String name;
-    private LocalDate dob;
+    private Date dob;
     private String state;
     private Set<String> role;
 
     public User() {
     }
 
-    public User(int id, String email, String password, String name, LocalDate dob, String state, Set<String> roles) {
+    public User(int id, String email, String password, String name, Date dob, String state, Set<String> roles) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -32,10 +33,6 @@ public class User implements Serializable {
         this.role = roles;
     }
 
-    public User(int i, String adminadmincom, String pssword1, String admin, String string, String ne) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
     public int getId() {
         return id;
     }
@@ -43,7 +40,7 @@ public class User implements Serializable {
     public void setId(int id) {
         this.id = id;
     }
-
+    
     public String getEmail() {
         return email;
     }
@@ -68,11 +65,11 @@ public class User implements Serializable {
         this.name = name;
     }
 
-    public LocalDate getDob() {
+    public Date getDob() {
         return dob;
     }
 
-    public void setDob(LocalDate dob) {
+    public void setDob(Date dob) {
         this.dob = dob;
     }
 

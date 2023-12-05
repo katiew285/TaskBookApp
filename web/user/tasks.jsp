@@ -1,3 +1,5 @@
+<%@page import="db.TaskDAO"%>
+<%@page import="java.util.List"%>
 <%@page import="java.time.LocalDateTime"%>
 <%@page import="java.time.format.DateTimeFormatter"%>
 <%@page import="java.time.LocalDate"%>
@@ -7,112 +9,116 @@
 <%@page import="java.util.LinkedHashMap"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="java.util.Date"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="business.Tasks"%>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/styles/style.css">
+<%@ page import="java.util.logging.Level" %>
+<%@ page import="java.util.logging.Logger" %>
 
+<link rel="stylesheet" href="<%= request.getContextPath()%>/styles/style.css">
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 
+<%
+    String userEmail = (String) session.getAttribute("userEmail");
 
+    List<Tasks> tasks = (List<Tasks>) request.getAttribute("tasks");
+    List<String> errors = (List<String>) request.getAttribute("errors");
+
+    try {
+        if (tasks == null || tasks.isEmpty()) {
+            tasks = TaskDAO.selectAll(userEmail);
+            request.setAttribute("tasks", tasks);
+        }
+    } catch (ClassNotFoundException e) {
+        Logger.getLogger("tasks.jsp").log(Level.SEVERE, "***error in the jsp", e);
+        request.setAttribute("NOTIFICATION", "class not found exception.");
+    }
+%>
 
 
 <!DOCTYPE html>
 <html>
     <head>
-        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <title>Your Task Page</title>
-        <script>
-            function confirmIsCompleted() {
-                return confirm("are you sure you want to mark this task as completed?\nthe task will be deleted.");
-            }
-
-            function confirmDelete() {
-                return confirm("are you sure you want to delete this task?");
-            }
-
-            function confirmDeleteAll() {
-                return confirm("are you sure you want to delete all tasks?");
-            }
-
-
-            // Function to format the current date and time in 12-hour format
-            function getCurrentDateTime() {
-                var currentDate = new Date();
-                var formattedDate = currentDate.toISOString().slice(0, 19).replace("T", " ");
-                return formattedDate;
-            }
-
-            // Set the current date and time when the page loads
-            document.addEventListener("DOMContentLoaded", function () {
-                var timestampInput = document.getElementById("timestamp");
-                timestampInput.value = getCurrentDateTime();
-            });
-
-            // Set the current date and time when the page loads
-            document.addEventListener("DOMContentLoaded", function () {
-                var timestampInput = document.getElementById("timestamp");
-                timestampInput.value = getCurrentDateTime();
-            });
-        </script>
-        <%
-            Date currentDate = new Date();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-            String formattedDate = dateFormat.format(currentDate);
-
-            ArrayList<String> errors = (ArrayList<String>) request.getAttribute("errors");
-            LinkedHashMap<String, Tasks> tasks = (LinkedHashMap<String, Tasks>) session.getAttribute("tasks");
-        %>
-        <%  if (errors != null && !errors.isEmpty()) {
-                out.println("<div style='color: red;' class='error-message'>");
-                Iterator<String> errorIterator = errors.iterator();
-                while (errorIterator.hasNext()) {
-                    out.println(errorIterator.next() + "<br>");
-                }
-                out.println("</div>");
-            } %>    
     </head>
+    <link rel="stylesheet" href="styles/style.css"/>
+    <header>
+        <h1 class="header-text"><strong>Task List</strong></h1>
+        <nav>
+            <ul class="navbar-nav navbar-collapse justify-content-end">
+                <li><a href="<%= request.getContextPath()%>/home.jsp" class="nav-link">home</a></li>
+                <li><a href="<%= request.getContextPath()%>/user/profile.jsp" class="nav-link">profile</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="alert alert-success center" role="alert">
+        <p>${NOTIFICATION}</p>
+    </div>
     <center>
         <body>
-
-            <header><h1><u><i>Your Tasks:</i></u></h1></header>
-            <ul>
-
-                <%if (tasks != null) { %>
-                <% for (Tasks task : tasks.values()) {%>
-                <li>
-                    <strong><%=task.getTitle()%></strong> - <%= task.getDueDate() != null ? task.getDueDate() : ""%><br>
-                    Description: <%= task.getDescription()%><br>
-                    <input type="radio" name="deleteRadio" onclick="return confirmIsCompleted()"> Completed?
-                    Timestamp: <%= task.getTimestamp()%>><Br>
-                    <form action="Task" method="post" id="deleteTaskForm" onsubmit="return confirmDelete();">
-                        <input type="hidden" name="action" value="deleteTask">
-                        <input type="hidden" name="taskIndex" value="<%=task.getId()%>">
-                        <input type="submit" value="delete">
+            <div class="container">
+                <h3>List of Tasks</h3>
+                <br>
+                <% if (tasks != null && !tasks.isEmpty()) { %>
+                <% for (Tasks taskItem : tasks) {%>
+                <div class="container text-left">
+                    <form action="<%= request.getContextPath()%>/Tasks" method="get">
+                        <input type="hidden" name="action" value="add task">
+                        <input type="hidden" name="taskId" value="<%= taskItem.getId()%>">
+                        <input type="submit" value="add task"></form>
+                    <form action="<%= request.getContextPath()%>/Tasks" method="post">
+                        <input type="hidden" name="action" value="confirmDeleteAll">
+                        <input type="hidden" name="taskId" value="<%= taskItem.getId()%>">
+                        <input type="submit" value="delete all tasks">
                     </form>
-                    <%}%>
-                    <% }%>
-                    </form>
-            </ul>
-            <br>
-            <a href="Controller?action=deleteAll" onclick="return confirmDeleteAll();">Delete All</a>
-            <br>
-            <br>
-            <br>
-            <br>
-            <h1>Add Task</h1>
-            <form action="<%=request.getContextPath()%>/Task" method="post" id="addTaskForm">
-                <input type="hidden" name="action" value="addTask"><Br>
-                <label>Task:</label><input type="text" name="title"><br>
-                <label>Description:</label><input type="text" name="description"><br>
-                <label>Due Date (not required):</label><input type="date" name="dueDate" id="dueDate" placeholder="yyyy-mm-dd"><br>
-                <label>Timestamp:</label><input type="text" name="timestamp" id="timestamp" readonly><br>            
-                <input type="submit" value="add task" id="addTask">
-            </form>
-            <form action="<%= request.getContextPath()%>/Logout" method="get">
-            <input type="button" value="profile" onclick="window.location = 'profile.jsp'">
-                <input type="submit" value="logout">
-            </form>
+                </div>
+                <br>
+
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>title</th>
+                            <th>description</th>
+                            <th>due date</th>
+                            <th>timestamp</th>
+                            <th>completed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><%= taskItem.getTitle()%></td>
+                            <td><%= taskItem.getDescription()%></td>
+                            <td><%= taskItem.getDueDate()%></td>
+                            <td><%= taskItem.getTimestamp()%></td>
+                            <td><form action="<%= request.getContextPath()%>/Tasks" method="post" id="isCompletedForm<%= taskItem.getId()%>">
+                                    <input type="hidden" name="action" value="confirmIsCompleted">
+                                    <input type="hidden" name="taskId" value="<%= taskItem.getId()%>">
+                                    <input type="radio" name="isCompleted" value="false" onclick="document.getElementById('isCompletedForm<%= taskItem.getId()%>').submit();">
+                                </form></td>
+                            <td><form action="<%= request.getContextPath()%>/Tasks" method="get">
+                                    <input type="hidden" name="action" value="edit">
+                                    <input type="hidden" name="taskId" value="<%= taskItem.getId()%>">
+                                    <input type="submit" value="edit"></form></td>
+                            <td> <form action="<%= request.getContextPath()%>/Tasks" method="post">
+                                    <input type="hidden" name="action" value="confirmDelete">
+                                    <input type="hidden" name="taskId" value="<%= taskItem.getId()%>">
+                                    <input type="submit" value="delete">
+                                </form></td>
+                            </td>
+                        </tr>
+                        <%}%>
+                        <% } else { %>
+                        <tr>
+                            <td colspan="6"> no tasks yet!</td>
+                        </tr>
+                        <% }%>
+                    </tbody>
+                </table>
+            </div>
+            </div>
         </body>
     </center>
+    <footer>
+        <div class="footer">© 2023 - TaskBook</div>
+    </footer>
 </html>

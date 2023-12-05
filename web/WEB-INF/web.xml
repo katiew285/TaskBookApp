@@ -24,6 +24,10 @@
         <servlet-name>AllUsers</servlet-name>
         <servlet-class>controllers.AllUsers</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>EditProfile</servlet-name>
+        <servlet-class>controllers.EditProfile</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Controller</servlet-name>
         <url-pattern>/Controller</url-pattern>
@@ -47,6 +51,10 @@
     <servlet-mapping>
         <servlet-name>AllUsers</servlet-name>
         <url-pattern>/AllUsers</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>EditProfile</servlet-name>
+        <url-pattern>/EditProfile</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

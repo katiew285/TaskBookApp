@@ -7,7 +7,7 @@ package business;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.Date;
+import java.sql.Date;
 
 /**
  *
@@ -20,7 +20,7 @@ public class Tasks implements Serializable {
     private String title;
     private String description;
     private Timestamp timestamp;
-    private LocalDate dueDate;
+    private Date dueDate;
     private boolean isCompleted;
 
     public Tasks(String title, Timestamp timestamp) {
@@ -31,12 +31,9 @@ public class Tasks implements Serializable {
     public Tasks() {
 
     }
-    
-    public Tasks(int id, String email, String title, String description, Timestamp timestamp, boolean isCompleted) {
-        this(id, email, title, description, timestamp, null, isCompleted);
-    }
 
-    public Tasks(int id, String email, String title, String description, Timestamp timestamp, LocalDate dueDate, boolean isCompleted) {
+    public Tasks(int id, String email, String title, String description, Timestamp timestamp, Date dueDate, boolean isCompleted) {
+        
         this.id = id;
         this.email = (email != null) ? email : "";
         this.title = title;
@@ -53,7 +50,7 @@ public class Tasks implements Serializable {
     public void setId(int id) {
         this.id = id;
     }
-
+    
     public String getEmail() {
         return email;
     }
@@ -86,11 +83,11 @@ public class Tasks implements Serializable {
         this.timestamp = timestamp;
     }
 
-    public LocalDate getDueDate() {
+    public Date getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(LocalDate dueDate) {
+    public void setDueDate(Date dueDate) {
         this.dueDate = dueDate;
     }
 

@@ -7,30 +7,49 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Register</title>
-    </head>
+        <title>Register Page</title>
+   <header>
+            <h1 class="header-text"><strong>Register</strong></h1>
+       <nav>
+            <ul class="navbar-nav navbar-collapse justify-content-end">
+                <li><a href="<%= request.getContextPath()%>/home.jsp" class="nav-link">home</a></li><br>
+                <li><a href="<%= request.getContextPath()%>/login.jsp" class="nav-link">login</a></li>
+            </ul>
+        </nav>
+    </header>
     <body>
     <center>
-        <% ArrayList<String> errors = (ArrayList<String>) request.getAttribute("errors");
-            
-            if(errors != null && !errors.isEmpty()){
-            for(String error : errors){
-            out.println("<div style='color: red;' class='error-message'>" + error + "</div>");
-                }
-               errors.clear();
-            } %>
-            <header> <strong><h1>Register</h1></strong><br></header>
-        <form action="Register" method="post">
-            email: <input type="email" name="email"><br>
-            password: <input type="password" name="password"><Br>
-            name: <input type="text" name="name"><Br>
-            date of birth <input type="date" name="dob"><Br>
-            state: <input type="text" name="state" maxlength="2"><Br>
-            <br>
-            <input type="submit" value="register" onclick="window.location = 'profile.jsp'"><input type="reset" value="reset"><Br>
-            <input type="button" value="back" onclick="window.location = 'home.jsp'">
+        
+                <div class="alert alert-success center" role="alert">
+                    <p>${NOTIFICATION}</p>
+                </div>
+                <strong><i><h3>user registration</h3></i></strong>
+                <form action="<%=request.getContextPath()%>/Register" method="post">
+                    <div class="form-group">
+                        <label>email:</label> <input type="text" class="form-control" id="email" name="email">
+                    </div>
+                    <div class="form-group">
+                        <label>password:</label> <input type="password" class="form-control" id="password" name="password" >
+                    </div>
+                    <div class="form-control">
+                        <label>name:</label> <input type="text" class="form-control" id="name" name="name">
+                    </div>
+                    <div class="form-control">
+                        <label>date of birth</label> <input type="date" class="form-control" id="dob" name="dob">
+                    </div>
+                    <div class="form-control">
+                        <label>state</label> <input type="text" class="form-control" id="state" name="state">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">register</button>
 
-        </form>
+                </form>
+            </div>
+        </div>
+        
     </center>
 </body>
+<footer>
+    <div class="footer">© 2023 - TaskBook</div>
+</footer>
 </html>

@@ -18,7 +18,7 @@ import java.sql.SQLException;
  */
 public class RegisterDAO {
 
-    public static void insert(User user) throws SQLException {
+    public static int insert(User user) throws SQLException, ClassNotFoundException {
         ConnectionPool pool = ConnectionPool.getInstance();
         Connection conn = pool.getConnection();
         PreparedStatement ps = null;
@@ -33,9 +33,10 @@ public class RegisterDAO {
             ps.setString(1, user.getEmail());
             ps.setString(2, user.getPassword());
             ps.setString(3, user.getName());
-            ps.setDate(4, Date.valueOf(user.getDob()));
+            ps.setDate(4, user.getDob());
             ps.setString(5, user.getState());
             ps.executeUpdate();
+            
         } catch (SQLException sqlEx) {
             throw sqlEx;
         } finally {
@@ -46,5 +47,6 @@ public class RegisterDAO {
                 throw e;
             }
         }
+        return 0;
     }
 }
