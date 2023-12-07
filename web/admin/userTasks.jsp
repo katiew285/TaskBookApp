@@ -4,7 +4,8 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <link rel="stylesheet" href="<%= request.getContextPath()%>/styles/style.css">
 
-<% List<Tasks> tasks = (List<Tasks>) request.getAttribute("tasks");%>
+<% String id = (String) session.getAttribute("id");
+    List<Tasks> tasks = (List<Tasks>) request.getAttribute("tasks");%>
 
 <!DOCTYPE html>
 <html>

@@ -62,7 +62,7 @@
                 <% if (tasks != null && !tasks.isEmpty()) { %>
                 <% for (Tasks taskItem : tasks) {%>
                 <div class="container text-left">
-                    <form action="<%= request.getContextPath()%>/Tasks" method="get">
+                    <form action="<%= request.getContextPath()%>/user/taskForm.jsp" method="get">
                         <input type="hidden" name="action" value="add task">
                         <input type="hidden" name="taskId" value="<%= taskItem.getId()%>">
                         <input type="submit" value="add task"></form>

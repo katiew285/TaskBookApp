@@ -6,21 +6,15 @@ package controllers;
 
 import business.Tasks;
 import db.TaskDAO;
-import db.UserDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -34,15 +28,23 @@ public class UserTasks extends HttpServlet {
             throws ServletException, IOException {
         int id = (int) request.getSession().getAttribute("id");
         List<Tasks> tasks = null;
+
         try {
-            if(tasks == null || tasks.isEmpty()){
-            tasks = TaskDAO.selectTasksByUserId(id);
-            request.setAttribute("tasks", tasks);
+            if (tasks == null || tasks.isEmpty()) {
+                tasks = TaskDAO.selectTasksByUserId(id);
+                if (tasks == null) {
+                    request.setAttribute("NOTIFICATION", "tasks in null.");
+                } else if (tasks.isEmpty()) {
+                    request.setAttribute("NOTIFICATION", "tasks is empty.");
+                } else {
+
+                    request.setAttribute("tasks", tasks);
+                }
             }
         } catch (SQLException | ClassNotFoundException e) {
-            request.setAttribute("NOTIFICATION", "ailed to retrieve tasks.");
+            request.setAttribute("NOTIFICATION", "failed to retrieve tasks.");
         }
-
+        request.setAttribute("tasks", tasks);
         RequestDispatcher dispatcher = request.getRequestDispatcher("admin/userTasks.jsp");
         dispatcher.forward(request, response);
     }
@@ -58,8 +60,8 @@ public class UserTasks extends HttpServlet {
         } catch (SQLException | ClassNotFoundException e) {
             request.setAttribute("NOTIFICATION", "failed to delete task.");
         }
-        
-        doGet(request, response); 
+
+        doGet(request, response);
     }
 
     /**

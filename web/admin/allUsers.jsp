@@ -73,7 +73,7 @@
                             <input type="hidden" name="userId" value="<%= user.getId()%>">
                             <input type="submit" value="view tasks" onclick="<%=request.getContextPath()%>/admin/userTasks.jsp">
                         </form>
-                        <form action="<%= request.getContextPath()%>/admin/deleteUser" method="post">
+                        <form action="<%= request.getContextPath()%>/admin/deleteUser.jsp" method="post">
                             <input type="hidden" name="userId" value="<%= user.getId()%>">
                             <input type="submit" value="delete">
                         </form>
